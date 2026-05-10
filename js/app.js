@@ -6,8 +6,8 @@
 // ── CONFIGURACIÓN SUPABASE ──────────────────────────────
 // Reemplazá estos valores con los de tu proyecto Supabase
 // Los encontrás en: Settings → API
-const SUPABASE_URL      = 'TU_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
+const SUPABASE_URL      = 'https://abjjrgwmunqwdulaecwk.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_6KrgUmIO95pAzz7jR0q4aA__4PijPVZ';
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
