@@ -652,10 +652,7 @@ function renderAdmin() {
       <td class="L"><input type="text" id="ac-${i}-name" value="${c.name}"></td>
       <td class="L"><input type="text" id="ac-${i}-ticker" value="${c.id}" style="width:70px;" disabled></td>
       <td><input type="number" id="ac-${i}-ap" value="${S.auctionPrices[c.id] || 0}" step="0.5" style="width:90px;"></td>
-      <td><select id="ac-${i}-pos" style="width:80px;">
-        <option value="">—</option>
-        ${S.countries.map((_, p) => `<option value="${p+1}" ${c.finalPos === p + 1 ? 'selected' : ''}>${p + 1}</option>`).join('')}
-      </select></td>
+      <td><select id="ac-${i}-pos" style="width:70px;text-align:center;"><option value="">—</option>${Array.from({length:S.countries.length},(_,k)=>`<option value="${k+1}"${c.finalPos==k+1?' selected':''}>&#35;${k+1}</option>`).join('')}</select></td>
       <td><button class="btn btn-xs btn-outline" style="color:var(--red);border-color:var(--red);" onclick="removeCountry('${c.id}')">×</button></td>
     </tr>`
   ).join('');
