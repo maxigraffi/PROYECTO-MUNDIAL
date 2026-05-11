@@ -652,7 +652,7 @@ function renderAdmin() {
       <td class="L"><input type="text" id="ac-${i}-name" value="${c.name}"></td>
       <td class="L"><input type="text" id="ac-${i}-ticker" value="${c.id}" style="width:70px;" disabled></td>
       <td><input type="number" id="ac-${i}-ap" value="${S.auctionPrices[c.id] || 0}" step="0.5" style="width:90px;"></td>
-      <td><select id="ac-${i}-pos" style="width:70px;text-align:center;"><option value="">—</option>${Array.from({length:S.countries.length},(_,k)=>`<option value="${k+1}"${c.finalPos==k+1?' selected':''}>&#35;${k+1}</option>`).join('')}</select></td>
+      <td><button type="button" class="csel-btn" id="ac-${i}-pos" data-val="${c.finalPos||''}" onclick="openCsel(this,${S.countries.length})">${c.finalPos ? '#'+c.finalPos : '—'}</button></td>
       <td><button class="btn btn-xs btn-outline" style="color:var(--red);border-color:var(--red);" onclick="removeCountry('${c.id}')">×</button></td>
     </tr>`
   ).join('');
@@ -885,7 +885,7 @@ async function saveCountries() {
     c.flag     = document.getElementById(`ac-${i}-flag`)?.value || c.flag;
     c.name     = document.getElementById(`ac-${i}-name`)?.value || c.name;
     const ap   = parseFloat(document.getElementById(`ac-${i}-ap`)?.value || 0);
-    const pos  = parseInt(document.getElementById(`ac-${i}-pos`)?.value);
+    const pos  = parseInt(document.getElementById(`ac-${i}-pos`)?.dataset.val);
     S.auctionPrices[c.id] = ap;
     c.finalPos = isNaN(pos) ? null : pos;
     updates.push(db.from('teams').update({ flag: c.flag, name: c.name, auction_price: ap, final_pos: c.finalPos || null }).eq('id', c.id));
@@ -1152,6 +1152,43 @@ document.addEventListener('keydown', e => {
 document.getElementById('order-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('order-modal')) closeModal();
 });
+
+/* ═══════════════════════════════
+   CUSTOM SELECT (Pos. Final)
+═══════════════════════════════ */
+function openCsel(btn, n) {
+  document.getElementById('csel-list')?.remove();
+  const r = btn.getBoundingClientRect();
+  const cur = String(btn.dataset.val);
+  const list = document.createElement('div');
+  list.id = 'csel-list';
+  list.style.cssText = [
+    `position:fixed`,
+    `top:${r.bottom + 2}px`,
+    `left:${r.left}px`,
+    `min-width:${Math.max(r.width, 80)}px`,
+    `max-height:220px`,
+    `overflow-y:auto`,
+    `background:var(--bg2)`,
+    `border:1px solid var(--border2)`,
+    `border-radius:4px`,
+    `z-index:9999`,
+    `box-shadow:0 6px 24px rgba(0,0,0,.6)`,
+  ].join(';');
+  const opts = [{ v: '', l: '—' }, ...Array.from({ length: n }, (_, k) => ({ v: String(k + 1), l: '#' + (k + 1) }))];
+  opts.forEach(o => {
+    const d = document.createElement('div');
+    d.textContent = o.l;
+    const active = o.v === cur;
+    d.style.cssText = `padding:7px 14px;cursor:pointer;font-size:12px;font-family:var(--mono);color:${active ? 'var(--accent)' : 'var(--text)'};font-weight:${active ? '700' : '400'};`;
+    d.onmouseenter = () => { d.style.background = 'var(--hover)'; };
+    d.onmouseleave = () => { d.style.background = ''; };
+    d.onclick = () => { btn.dataset.val = o.v; btn.textContent = o.l; list.remove(); };
+    list.appendChild(d);
+  });
+  document.body.appendChild(list);
+  setTimeout(() => document.addEventListener('click', () => document.getElementById('csel-list')?.remove(), { once: true }), 0);
+}
 
 /* ═══════════════════════════════
    BOOT
