@@ -242,7 +242,7 @@ label{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.05em;tex
 .admin-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px;}
 .admin-section-chevron{color:var(--text3);font-size:14px;transition:transform .2s;line-height:1;margin-left:8px;flex-shrink:0;}
 .admin-section.collapsed .admin-section-chevron{transform:rotate(-90deg);}
-.admin-section-body{background:var(--bg2);max-height:340px;overflow-y:auto;}
+.admin-section-body{background:var(--bg2);}
 .admin-section.collapsed .admin-section-body{display:none;}
 .admin-section-actions{display:flex;align-items:center;gap:8px;}
 
