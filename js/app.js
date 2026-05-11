@@ -1162,32 +1162,62 @@ function openCsel(btn, n) {
   const cur = String(btn.dataset.val);
   const list = document.createElement('div');
   list.id = 'csel-list';
-  list.style.cssText = [
-    `position:fixed`,
-    `top:${r.bottom + 2}px`,
-    `left:${r.left}px`,
-    `min-width:${Math.max(r.width, 80)}px`,
-    `max-height:220px`,
-    `overflow-y:auto`,
-    `background:var(--bg2)`,
-    `border:1px solid var(--border2)`,
-    `border-radius:4px`,
-    `z-index:9999`,
-    `box-shadow:0 6px 24px rgba(0,0,0,.6)`,
-  ].join(';');
+
+  // Decide si abrir hacia arriba o hacia abajo
+  const maxH = 220;
+  const spaceBelow = window.innerHeight - r.bottom - 8;
+  const openUp = spaceBelow < maxH && r.top > spaceBelow;
+
+  Object.assign(list.style, {
+    position: 'fixed',
+    left: r.left + 'px',
+    minWidth: Math.max(r.width, 80) + 'px',
+    maxHeight: maxH + 'px',
+    overflowY: 'auto',
+    background: '#0d1117',
+    border: '1px solid #2a3a50',
+    borderRadius: '4px',
+    zIndex: '99999',
+    boxShadow: '0 6px 24px rgba(0,0,0,.85)',
+    fontFamily: 'monospace',
+  });
+  if (openUp) {
+    list.style.bottom = (window.innerHeight - r.top + 2) + 'px';
+  } else {
+    list.style.top = (r.bottom + 2) + 'px';
+  }
+
   const opts = [{ v: '', l: '—' }, ...Array.from({ length: n }, (_, k) => ({ v: String(k + 1), l: '#' + (k + 1) }))];
   opts.forEach(o => {
     const d = document.createElement('div');
     d.textContent = o.l;
     const active = o.v === cur;
-    d.style.cssText = `padding:7px 14px;cursor:pointer;font-size:12px;font-family:var(--mono);color:${active ? 'var(--accent)' : 'var(--text)'};font-weight:${active ? '700' : '400'};`;
-    d.onmouseenter = () => { d.style.background = 'var(--hover)'; };
+    Object.assign(d.style, {
+      padding: '7px 14px',
+      cursor: 'pointer',
+      fontSize: '12px',
+      color: active ? '#3d9eff' : '#dce8f5',
+      fontWeight: active ? '700' : '400',
+    });
+    d.onmouseenter = () => { d.style.background = '#1a2133'; };
     d.onmouseleave = () => { d.style.background = ''; };
-    d.onclick = () => { btn.dataset.val = o.v; btn.textContent = o.l; list.remove(); };
+    d.onclick = e => { e.stopPropagation(); btn.dataset.val = o.v; btn.textContent = o.l; list.remove(); };
     list.appendChild(d);
   });
+
   document.body.appendChild(list);
-  setTimeout(() => document.addEventListener('click', () => document.getElementById('csel-list')?.remove(), { once: true }), 0);
+
+  // Scroll hasta la opción activa
+  const activeIdx = opts.findIndex(o => o.v === cur);
+  if (activeIdx > 0) list.children[activeIdx]?.scrollIntoView({ block: 'nearest' });
+
+  const closeHandler = e => {
+    if (!list.contains(e.target) && e.target !== btn) {
+      list.remove();
+      document.removeEventListener('click', closeHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', closeHandler), 10);
 }
 
 /* ═══════════════════════════════
