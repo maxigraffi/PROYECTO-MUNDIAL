@@ -999,7 +999,7 @@ async function _doSignIn(email, pass) {
 }
 
 async function _doSignUp(name, email, pass) {
-  if (S.users.length >= 6) { _setLoginError('El torneo ya tiene 6 jugadores. Contactá al admin.'); return; }
+  if (S.users.length >= 8) { _setLoginError('El torneo ya tiene 8 jugadores. Contactá al admin.'); return; }
   const { data, error } = await db.auth.signUp({ email, password: pass });
   if (error) { _setLoginError(error.message); return; }
 
